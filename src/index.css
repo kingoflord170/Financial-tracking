@@ -1,0 +1,200 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+
+    --background: #f8fafc;
+    --foreground: #111827;
+
+    --card: #ffffff;
+    --card-foreground: #111827;
+    --card-elevated: #f1f5f9;
+
+    --popover: #ffffff;
+    --popover-foreground: #111827;
+
+    --primary: #2563eb;
+    --primary-foreground: #ffffff;
+    --primary-hover: #1d4ed8;
+    --primary-muted: #dbeafe;
+
+    --secondary: #f1f5f9;
+    --secondary-foreground: #1e293b;
+
+    --muted: #f1f5f9;
+    --muted-foreground: #64748b;
+
+    --accent: #eff6ff;
+    --accent-foreground: #1d4ed8;
+
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+
+    --success: #10b981;
+    --success-foreground: #ffffff;
+
+    --warning: #f59e0b;
+    --warning-foreground: #ffffff;
+
+    --border: #e2e8f0;
+    --ring: #3b82f6;
+
+    /* Light Theme Form Controls */
+    --input-bg: #ffffff;
+    --input-fg: #111827;
+    --input-placeholder: #6b7280;
+    --input-border: #d1d5db;
+    --input-focus-border: #2563eb;
+    --input-disabled: #f3f4f6;
+
+    --radius: 0.625rem;
+  }
+
+  .dark {
+    color-scheme: dark;
+
+    /* Premium Deep Navy / Charcoal Financial Surface */
+    --background: #080b11;
+    --foreground: #f3f4f6;
+
+    --card: #0d121d;
+    --card-foreground: #f3f4f6;
+    --card-elevated: #131b2c;
+
+    --popover: #0d121d;
+    --popover-foreground: #f3f4f6;
+
+    /* Restrained Electric Blue & Cyan Accents */
+    --primary: #3b82f6;
+    --primary-foreground: #ffffff;
+    --primary-hover: #60a5fa;
+    --primary-muted: rgba(59, 130, 246, 0.15);
+
+    --secondary: #162033;
+    --secondary-foreground: #e2e8f0;
+
+    --muted: #131b2c;
+    --muted-foreground: #94a3b8;
+
+    --accent: #17243c;
+    --accent-foreground: #38bdf8;
+
+    --destructive: #f43f5e;
+    --destructive-foreground: #ffffff;
+
+    --success: #10b981;
+    --success-foreground: #ffffff;
+
+    --warning: #f59e0b;
+    --warning-foreground: #ffffff;
+
+    --border: #1a2538;
+    --ring: #38bdf8;
+
+    /* Dark Theme Form Controls */
+    --input-bg: #171923;
+    --input-fg: #f3f4f6;
+    --input-placeholder: #9ca3af;
+    --input-border: #2d3748;
+    --input-focus-border: #38bdf8;
+    --input-disabled: #0f131a;
+  }
+
+  /* Universal Form Controls Baseline */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="button"]):not([type="submit"]):not([type="reset"]),
+  select,
+  textarea {
+    background-color: var(--input-bg);
+    color: var(--input-fg);
+    border-color: var(--input-border);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--input-placeholder);
+    opacity: 1;
+  }
+
+  select option {
+    background-color: var(--input-bg);
+    color: var(--input-fg);
+  }
+
+  /* Date / Time calendar picker icon visibility */
+  ::-webkit-calendar-picker-indicator {
+    filter: invert(0.4) brightness(0.8);
+    cursor: pointer;
+    opacity: 0.8;
+  }
+  .dark ::-webkit-calendar-picker-indicator {
+    filter: invert(0.85) brightness(1.2);
+    cursor: pointer;
+    opacity: 0.85;
+  }
+
+  /* Form autofill visibility */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover, 
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    -webkit-text-fill-color: var(--input-fg) !important;
+    -webkit-box-shadow: 0 0 0px 1000px var(--input-bg) inset !important;
+    box-shadow: 0 0 0px 1000px var(--input-bg) inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom sleek financial scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.35);
+}
+
+/* Numeric tabular figures for clean alignment of amounts */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+}
+
+/* Glow effects for cards and highlights */
+.glow-border {
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 15px -3px rgba(59, 130, 246, 0.15);
+}
+
+.glow-border-success {
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  box-shadow: 0 0 15px -3px rgba(16, 185, 129, 0.15);
+}
+
+.glow-border-danger {
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  box-shadow: 0 0 15px -3px rgba(244, 63, 94, 0.15);
+}
