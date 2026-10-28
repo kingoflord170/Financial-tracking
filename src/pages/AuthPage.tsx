@@ -12,11 +12,10 @@ export function AuthPage() {
     signInWithPassword,
     signUpWithPassword,
     resetPassword,
-    startLocalRealSession,
   } = useAuth();
 
   const [tab, setTab] = useState<'signin' | 'signup' | 'forgot'>('signin');
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('anandkrishnan170@gmail.com');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -190,33 +189,10 @@ export function AuthPage() {
             <div className="mt-4 p-3 rounded-xl bg-card-elevated border border-border text-[11px] text-muted-foreground flex items-start gap-2">
               <Info className="h-4 w-4 text-cyan-400 shrink-0 mt-0.5" />
               <span>
-                Supabase credentials are not configured in <code className="font-mono text-primary">.env</code>. Use Demo Mode below to test all features with local IndexedDB storage.
+                Supabase credentials are not configured in <code className="font-mono text-primary">.env</code>.
               </span>
             </div>
           )}
-
-          {/* Divider */}
-          <div className="relative my-5">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border/60" />
-            </div>
-            <div className="relative flex justify-center text-[10px] uppercase tracking-wider">
-              <span className="bg-card px-2 text-muted-foreground">Or Offline Real-Time Use</span>
-            </div>
-          </div>
-
-          {/* Quick Local Real Account Action */}
-          <Button
-            type="button"
-            variant="outline"
-            size="md"
-            className="w-full gap-2 border-primary/40 text-foreground hover:bg-primary/10 hover:border-primary"
-            onClick={() => startLocalRealSession(displayName.trim() || 'My Account')}
-          >
-            <ShieldCheck className="h-4 w-4 text-emerald-400" />
-            <span className="font-bold">Use Local Device Storage (No Cloud)</span>
-            <ArrowRight className="h-4 w-4 ml-auto text-primary" />
-          </Button>
         </Card>
 
         {/* Security badge */}

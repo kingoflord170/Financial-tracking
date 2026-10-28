@@ -101,27 +101,17 @@ export function Sidebar({
       </div>
 
       {/* Mode & Sync Status Indicator */}
-      {!isCollapsed && (
+      {!isCollapsed && isSupabaseConfigured && (
         <div className="px-4 py-2.5 border-b border-border/40">
-          {isSupabaseConfigured ? (
-            <div className="flex items-center gap-2 p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs">
-              <Cloud className="h-3.5 w-3.5 shrink-0" />
-              <div className="flex flex-col">
-                <span className="font-semibold leading-tight">Supabase Connected</span>
-                <span className="text-[10px] text-muted-foreground">
-                  {syncState?.pendingCount ? `${syncState.pendingCount} pending sync` : 'All changes synced'}
-                </span>
-              </div>
+          <div className="flex items-center gap-2 p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs">
+            <Cloud className="h-3.5 w-3.5 shrink-0" />
+            <div className="flex flex-col">
+              <span className="font-semibold leading-tight">Supabase Connected</span>
+              <span className="text-[10px] text-muted-foreground">
+                {syncState?.pendingCount ? `${syncState.pendingCount} pending sync` : 'All changes synced'}
+              </span>
             </div>
-          ) : (
-            <div className="flex items-center gap-2 p-2 rounded-lg bg-secondary border border-border text-xs text-muted-foreground">
-              <div className="h-2 w-2 rounded-full bg-emerald-400" />
-              <div className="flex flex-col">
-                <span className="font-semibold text-foreground leading-tight">Offline Mode</span>
-                <span className="text-[10px]">Real-time local storage</span>
-              </div>
-            </div>
-          )}
+          </div>
         </div>
       )}
 
