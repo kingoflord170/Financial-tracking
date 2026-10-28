@@ -12,7 +12,7 @@ export function AuthPage() {
     signInWithPassword,
     signUpWithPassword,
     resetPassword,
-    enterDemoMode,
+    startLocalRealSession,
   } = useAuth();
 
   const [tab, setTab] = useState<'signin' | 'signup' | 'forgot'>('signin');
@@ -201,20 +201,20 @@ export function AuthPage() {
               <div className="w-full border-t border-border/60" />
             </div>
             <div className="relative flex justify-center text-[10px] uppercase tracking-wider">
-              <span className="bg-card px-2 text-muted-foreground">Or Instant Sandbox</span>
+              <span className="bg-card px-2 text-muted-foreground">Or Offline Real-Time Use</span>
             </div>
           </div>
 
-          {/* Quick Demo Mode Action */}
+          {/* Quick Local Real Account Action */}
           <Button
             type="button"
             variant="outline"
             size="md"
             className="w-full gap-2 border-primary/40 text-foreground hover:bg-primary/10 hover:border-primary"
-            onClick={enterDemoMode}
+            onClick={() => startLocalRealSession(displayName.trim() || 'My Account')}
           >
-            <Sparkles className="h-4 w-4 text-cyan-400" />
-            <span className="font-bold">Explore in Demo Sandbox Mode</span>
+            <ShieldCheck className="h-4 w-4 text-emerald-400" />
+            <span className="font-bold">Use Local Device Storage (No Cloud)</span>
             <ArrowRight className="h-4 w-4 ml-auto text-primary" />
           </Button>
         </Card>

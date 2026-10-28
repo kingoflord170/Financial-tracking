@@ -215,13 +215,6 @@ export function LoanModal({ open, onOpenChange, editingLoan, onSave }: LoanModal
           </Select>
         </div>
 
-        <Input
-          label="Notes / Loan Account Number"
-          placeholder="e.g. Loan A/C # 98127391, fixed interest"
-          value={notes}
-          onChange={e => setNotes(e.target.value)}
-        />
-
         {error && (
           <div className="p-2.5 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-xs">
             {error}

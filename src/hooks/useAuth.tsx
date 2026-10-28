@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase/client';
-import { seedCleanUser, seedDemoData } from '@/lib/db/seed';
+import { seedCleanUser } from '@/lib/db/seed';
 import { db } from '@/lib/db';
 
 export interface UserSession {
@@ -21,58 +21,42 @@ interface AuthContextType {
   enterDemoMode: () => Promise<void>;
   resetDemoData: () => Promise<void>;
   clearLocalData: () => Promise<void>;
+  startLocalRealSession: (name?: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-const DEMO_USER_ID = 'demo-user-myfinance-in';
-const DEMO_USER: UserSession = {
-  id: DEMO_USER_ID,
-  email: 'demo@myfinance.local',
-  displayName: 'Priya Sharma (Demo)',
-};
+const LOCAL_USER_ID = 'local-real-user';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserSession | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isDemoMode, setIsDemoMode] = useState(false);
+  const isDemoMode = false; // Demo mode permanently disabled for real-time use
 
   useEffect(() => {
     async function initAuth() {
       setIsLoading(true);
 
-      // Check if user previously chose Demo Mode or if Supabase is not configured
-      const savedMode = localStorage.getItem('myfinance_mode');
+      // Clean up legacy demo flags
+      localStorage.removeItem('myfinance_mode');
 
-      if (!isSupabaseConfigured || savedMode === 'demo') {
-        // Initialize Demo Mode
-        setIsDemoMode(true);
-        setUser(DEMO_USER);
-        // Ensure initial demo data exists in IndexedDB
-        const accCount = await db.accounts.where('user_id').equals(DEMO_USER_ID).count();
-        if (accCount === 0) {
-          await seedDemoData(DEMO_USER_ID);
-        }
-        setIsLoading(false);
-        return;
-      }
-
-      // Supabase is configured
-      if (supabase) {
+      // Check if user has an active Supabase cloud session
+      if (supabase && isSupabaseConfigured) {
         try {
           const { data: { session } } = await supabase.auth.getSession();
           if (session?.user) {
-            setUser({
+            const userSession: UserSession = {
               id: session.user.id,
               email: session.user.email || '',
               displayName: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
-            });
+            };
+            setUser(userSession);
             await seedCleanUser(session.user.id);
-          } else {
-            setUser(null);
+            setIsLoading(false);
+            return;
           }
         } catch {
-          setUser(null);
+          // Continue to check local real session
         }
 
         // Listen to auth state changes
@@ -83,8 +67,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               email: session.user.email || '',
               displayName: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
             });
-            setIsDemoMode(false);
-            localStorage.setItem('myfinance_mode', 'cloud');
             await seedCleanUser(session.user.id);
           } else {
             setUser(null);
@@ -92,8 +74,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setIsLoading(false);
         });
 
+        // Check if there is an active local real session
+        const savedLocalUser = localStorage.getItem('myfinance_real_user');
+        if (savedLocalUser) {
+          try {
+            const parsed = JSON.parse(savedLocalUser);
+            setUser(parsed);
+            await seedCleanUser(parsed.id);
+          } catch {
+            setUser(null);
+          }
+        } else {
+          setUser(null);
+        }
+
         setIsLoading(false);
         return () => subscription.unsubscribe();
+      }
+
+      // If Supabase is not configured, check for saved local real-time session
+      const savedLocal = localStorage.getItem('myfinance_real_user');
+      if (savedLocal) {
+        try {
+          const parsed = JSON.parse(savedLocal);
+          setUser(parsed);
+          await seedCleanUser(parsed.id);
+        } catch {
+          setUser(null);
+        }
+      } else {
+        setUser(null);
       }
 
       setIsLoading(false);
@@ -104,18 +114,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithPassword = async (email: string, pass: string) => {
     if (!supabase || !isSupabaseConfigured) {
-      return { error: 'Supabase is not configured. Please use Demo Mode or configure credentials in .env' };
+      return { error: 'Supabase cloud is currently unavailable or paused. You can use Local Real-Time Mode.' };
     }
     const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
     if (error) return { error: error.message };
-    setIsDemoMode(false);
-    localStorage.setItem('myfinance_mode', 'cloud');
     return { error: null };
   };
 
   const signUpWithPassword = async (email: string, pass: string, name: string) => {
     if (!supabase || !isSupabaseConfigured) {
-      return { error: 'Supabase is not configured. Please use Demo Mode or configure credentials in .env' };
+      return { error: 'Supabase cloud is currently unavailable or paused. You can use Local Real-Time Mode.' };
     }
     const { error } = await supabase.auth.signUp({
       email,
@@ -123,23 +131,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       options: { data: { full_name: name } },
     });
     if (error) return { error: error.message };
-    setIsDemoMode(false);
-    localStorage.setItem('myfinance_mode', 'cloud');
     return { error: null };
+  };
+
+  const startLocalRealSession = async (name: string = 'Personal Ledger') => {
+    const localUser: UserSession = {
+      id: LOCAL_USER_ID,
+      email: 'local@myfinance.app',
+      displayName: name,
+    };
+    localStorage.setItem('myfinance_real_user', JSON.stringify(localUser));
+    setUser(localUser);
+    await seedCleanUser(LOCAL_USER_ID);
   };
 
   const signOut = async () => {
     if (supabase && isSupabaseConfigured) {
-      await supabase.auth.signOut();
+      try {
+        await supabase.auth.signOut();
+      } catch {
+        // ignore
+      }
     }
+    localStorage.removeItem('myfinance_real_user');
     localStorage.removeItem('myfinance_mode');
     setUser(null);
-    setIsDemoMode(false);
   };
 
   const resetPassword = async (email: string) => {
     if (!supabase || !isSupabaseConfigured) {
-      return { error: 'Supabase is not configured. Cannot send password reset email.' };
+      return { error: 'Supabase cloud is not reachable.' };
     }
     const { error } = await supabase.auth.resetPasswordForEmail(email);
     if (error) return { error: error.message };
@@ -147,19 +168,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const enterDemoMode = async () => {
-    setIsDemoMode(true);
-    localStorage.setItem('myfinance_mode', 'demo');
-    setUser(DEMO_USER);
-    // Seed sample data if empty
-    const count = await db.accounts.where('user_id').equals(DEMO_USER_ID).count();
-    if (count === 0) {
-      await seedDemoData(DEMO_USER_ID);
-    }
+    await startLocalRealSession();
   };
 
   const resetDemoData = async () => {
-    if (isDemoMode) {
-      await seedDemoData(DEMO_USER_ID);
+    if (user?.id) {
+      await seedCleanUser(user.id);
     }
   };
 
@@ -192,6 +206,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         enterDemoMode,
         resetDemoData,
         clearLocalData,
+        startLocalRealSession,
       }}
     >
       {children}

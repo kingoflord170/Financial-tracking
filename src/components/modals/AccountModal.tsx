@@ -150,13 +150,6 @@ export function AccountModal({
               required
               autoFocus
             />
-
-            <Input
-              label="Reconciliation Notes"
-              placeholder="e.g. Month-end statement verification"
-              value={reconcileNotes}
-              onChange={e => setReconcileNotes(e.target.value)}
-            />
           </>
         ) : (
           <>

@@ -85,7 +85,7 @@ export function Sidebar({
                 MyFinance
               </span>
               <span className="text-[10px] text-muted-foreground font-mono">
-                {isDemoMode ? 'Demo Sandbox' : 'INR • en-IN'}
+                INR • en-IN
               </span>
             </div>
           )}
@@ -103,15 +103,7 @@ export function Sidebar({
       {/* Mode & Sync Status Indicator */}
       {!isCollapsed && (
         <div className="px-4 py-2.5 border-b border-border/40">
-          {isDemoMode ? (
-            <div className="flex items-center gap-2 p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs">
-              <Sparkles className="h-3.5 w-3.5 shrink-0" />
-              <div className="flex flex-col">
-                <span className="font-semibold leading-tight">Demo Mode Active</span>
-                <span className="text-[10px] text-muted-foreground">Using local mock database</span>
-              </div>
-            </div>
-          ) : isSupabaseConfigured ? (
+          {isSupabaseConfigured ? (
             <div className="flex items-center gap-2 p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs">
               <Cloud className="h-3.5 w-3.5 shrink-0" />
               <div className="flex flex-col">
@@ -122,9 +114,12 @@ export function Sidebar({
               </div>
             </div>
           ) : (
-            <div className="flex items-center gap-2 p-2 rounded-lg bg-secondary border border-border text-muted-foreground text-xs">
-              <WifiOff className="h-3.5 w-3.5 shrink-0" />
-              <span className="font-medium text-[11px]">Local Offline Mode</span>
+            <div className="flex items-center gap-2 p-2 rounded-lg bg-secondary border border-border text-xs text-muted-foreground">
+              <div className="h-2 w-2 rounded-full bg-emerald-400" />
+              <div className="flex flex-col">
+                <span className="font-semibold text-foreground leading-tight">Offline Mode</span>
+                <span className="text-[10px]">Real-time local storage</span>
+              </div>
             </div>
           )}
         </div>

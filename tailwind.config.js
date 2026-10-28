@@ -93,10 +93,15 @@ export default {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.6' },
         },
+        'dropdown-open': {
+          '0%': { opacity: '0', transform: 'scale(0.96) translateY(-4px)' },
+          '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
+        },
       },
       animation: {
         'fade-in': 'fade-in 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
         'pulse-subtle': 'pulse-subtle 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'dropdown-open': 'dropdown-open 0.18s cubic-bezier(0.16, 1, 0.3, 1)',
       },
     },
   },

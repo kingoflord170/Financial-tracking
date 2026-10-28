@@ -180,14 +180,6 @@ export function TransferModal({
           required
         />
 
-        {/* Notes */}
-        <Input
-          label="Notes / Reason"
-          placeholder="e.g. ATM withdrawal, Bank to GPay recharge"
-          value={notes}
-          onChange={e => setNotes(e.target.value)}
-        />
-
         {error && (
           <div className="p-2.5 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-xs">
             {error}

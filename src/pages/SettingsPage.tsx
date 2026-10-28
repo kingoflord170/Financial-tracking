@@ -29,7 +29,7 @@ import {
 } from 'lucide-react';
 
 export function SettingsPage() {
-  const { user, isDemoMode, isSupabaseConfigured, resetDemoData, clearLocalData, signOut } = useAuth();
+  const { user, isDemoMode, isSupabaseConfigured, clearLocalData, signOut } = useAuth();
   const { theme, setTheme } = useTheme();
   const finance = useFinanceData();
   const notifications = useNotifications(finance.reminders);
@@ -45,7 +45,6 @@ export function SettingsPage() {
   const [isTestingConnection, setIsTestingConnection] = useState(false);
 
   // Destructive confirmations
-  const [confirmResetDemoOpen, setConfirmResetDemoOpen] = useState(false);
   const [confirmClearDataOpen, setConfirmClearDataOpen] = useState(false);
 
   useEffect(() => {
@@ -298,23 +297,6 @@ export function SettingsPage() {
         <CardContent className="p-0 space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border border-destructive/20 bg-card">
             <div>
-              <p className="text-xs font-bold text-foreground">Reset Demo Data</p>
-              <p className="text-[11px] text-muted-foreground">
-                Re-seeds realistic sample accounts, loans, and Oct 2026 transactions.
-              </p>
-            </div>
-            <Button
-              size="sm"
-              variant="outline"
-              className="border-destructive/40 text-destructive hover:bg-destructive/10"
-              onClick={() => setConfirmResetDemoOpen(true)}
-            >
-              Reset Demo
-            </Button>
-          </div>
-
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border border-destructive/20 bg-card">
-            <div>
               <p className="text-xs font-bold text-destructive">Clear All Local Data</p>
               <p className="text-[11px] text-muted-foreground">
                 Permanently deletes all cached transactions, accounts, and budgets from IndexedDB.
@@ -330,21 +312,6 @@ export function SettingsPage() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Reset Demo Confirmation Modal */}
-      <ConfirmationModal
-        open={confirmResetDemoOpen}
-        onOpenChange={setConfirmResetDemoOpen}
-        title="Reset Demo Dataset?"
-        description="This will restore all default demonstration accounts, October 2026 transactions, car loan EMI, and sample budgets."
-        confirmLabel="Reset Dataset"
-        variant="destructive"
-        onConfirm={async () => {
-          await resetDemoData();
-          await finance.reloadData();
-          toast.success('Demo data restored successfully.');
-        }}
-      />
 
       {/* Clear Data Confirmation Modal */}
       <ConfirmationModal

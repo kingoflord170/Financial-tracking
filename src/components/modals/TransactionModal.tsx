@@ -218,14 +218,6 @@ export function TransactionModal({
           </Select>
         </div>
 
-        {/* Description / Notes */}
-        <Input
-          label="Notes / Description"
-          placeholder="e.g. Weekly grocery restock from Blinkit"
-          value={notes}
-          onChange={e => setNotes(e.target.value)}
-        />
-
         {/* Tags */}
         <Input
           label="Tags (Comma separated)"

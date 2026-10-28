@@ -138,11 +138,6 @@ export function DashboardPage({ onNavigate, onOpenQuickAdd }: DashboardPageProps
             <h2 className="text-xl md:text-2xl font-black text-foreground tracking-tight">
               Financial Overview
             </h2>
-            {isDemoMode && (
-              <Badge variant="electric" className="gap-1">
-                <Sparkles className="h-3 w-3" /> Demo Sandbox
-              </Badge>
-            )}
           </div>
           <p className="text-xs text-muted-foreground mt-0.5">
             Real-time accounting ledger • Standard INR format (₹)

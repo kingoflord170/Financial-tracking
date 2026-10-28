@@ -265,13 +265,6 @@ export function LoanPaymentModal({
             onChange={e => setDate(e.target.value)}
             required
           />
-
-          <Input
-            label="Notes / Transaction Ref"
-            placeholder="e.g. October Auto-Debit EMI #14"
-            value={notes}
-            onChange={e => setNotes(e.target.value)}
-          />
         </div>
 
         {error && (

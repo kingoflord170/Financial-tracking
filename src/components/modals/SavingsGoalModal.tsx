@@ -164,13 +164,6 @@ export function SavingsGoalModal({
                 </option>
               ))}
             </Select>
-
-            <Input
-              label="Notes"
-              placeholder="e.g. Monthly SIP transfer, Bonus allocation"
-              value={notes}
-              onChange={e => setNotes(e.target.value)}
-            />
           </>
         ) : (
           <>
