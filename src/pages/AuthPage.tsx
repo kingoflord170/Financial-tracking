@@ -17,7 +17,7 @@ export function AuthPage() {
   const [tab, setTab] = useState<'signin' | 'signup' | 'forgot'>('signin');
   const [email, setEmail] = useState('anandkrishnan170@gmail.com');
   const [password, setPassword] = useState('');
-  const [displayName, setDisplayName] = useState('');
+  const [displayName, setDisplayName] = useState('Anand Krishnan');
   const [isLoading, setIsLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
 
@@ -40,7 +40,14 @@ export function AuthPage() {
         }
         const res = await signUpWithPassword(email, password, displayName);
         if (res.error) {
-          setStatusMessage({ type: 'error', text: res.error });
+          if (res.error.toLowerCase().includes('already registered')) {
+            setStatusMessage({
+              type: 'error',
+              text: 'This email is already registered. Please click "Sign In" to log in with your credentials.',
+            });
+          } else {
+            setStatusMessage({ type: 'error', text: res.error });
+          }
         } else {
           setStatusMessage({
             type: 'success',

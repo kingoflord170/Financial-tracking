@@ -1,7 +1,10 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const DEFAULT_SUPABASE_URL = 'https://pkklhcjfeczqnnpuoglf.supabase.co';
+const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBra2xoY2pmZWN6cW5ucHVvZ2xmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1Nzg0ODAsImV4cCI6MjA5ODE1NDQ4MH0.o8Yr9TlVMKfCDaVQUSq4rIMS6zewM00z--OjCrcl3kY';
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || DEFAULT_SUPABASE_ANON_KEY;
 
 // Check if credentials are valid, non-empty, and not default placeholders
 export const isSupabaseConfigured: boolean = Boolean(
@@ -32,7 +35,7 @@ export async function testSupabaseConnection(): Promise<{
   if (!supabase || !isSupabaseConfigured) {
     return {
       connected: false,
-      message: 'Supabase credentials are not configured. The application is running in local offline / demo mode.',
+      message: 'Supabase credentials are not configured.',
     };
   }
 

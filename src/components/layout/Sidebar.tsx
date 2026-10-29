@@ -48,7 +48,7 @@ export function Sidebar({
   onToggleCollapse,
   syncState,
 }: SidebarProps) {
-  const { user, isDemoMode, isSupabaseConfigured, signOut } = useAuth();
+  const { user, isSupabaseConfigured, signOut } = useAuth();
 
   const navItems: Array<{ id: NavPage; label: string; icon: React.ReactNode; badge?: string | number }> = [
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="h-4 w-4" /> },
@@ -161,7 +161,7 @@ export function Sidebar({
                   {user?.displayName || 'MyFinance User'}
                 </span>
                 <span className="text-[10px] text-muted-foreground truncate font-mono">
-                  {user?.email || 'offline@myfinance'}
+                  {user?.email || 'cloud@myfinance'}
                 </span>
               </div>
             )}

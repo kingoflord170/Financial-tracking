@@ -29,7 +29,7 @@ import {
 } from 'lucide-react';
 
 export function SettingsPage() {
-  const { user, isDemoMode, isSupabaseConfigured, clearLocalData, signOut } = useAuth();
+  const { user, isSupabaseConfigured, clearLocalData, signOut } = useAuth();
   const { theme, setTheme } = useTheme();
   const finance = useFinanceData();
   const notifications = useNotifications(finance.reminders);
@@ -96,9 +96,9 @@ export function SettingsPage() {
               />
               <Input
                 label="Registered Email"
-                value={user?.email || 'offline-user'}
+                value={user?.email || ''}
                 disabled
-                helperText={isDemoMode ? 'Running in local sandbox mode' : undefined}
+                helperText="Supabase authenticated account"
               />
             </div>
 
@@ -232,12 +232,12 @@ export function SettingsPage() {
               />
               <div>
                 <span className="font-bold text-foreground">
-                  {isSupabaseConfigured ? 'Supabase Credentials Configured' : 'Local Offline / Demo Mode Active'}
+                  {isSupabaseConfigured ? 'Supabase Cloud Connected' : 'Supabase Not Configured'}
                 </span>
                 <p className="text-[11px] text-muted-foreground">
                   {isSupabaseConfigured
-                    ? 'Connected to configured project URL in .env'
-                    : 'Running securely with IndexedDB on your device'}
+                    ? 'Connected to Supabase PostgreSQL with Row Level Security'
+                    : 'Check your environment configuration'}
                 </p>
               </div>
             </div>
