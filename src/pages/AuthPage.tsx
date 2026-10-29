@@ -136,7 +136,6 @@ export function AuthPage() {
             {tab === 'signup' && (
               <Input
                 label="Full Name"
-                placeholder="e.g. Priya Sharma"
                 value={displayName}
                 onChange={e => setDisplayName(e.target.value)}
                 startAdornment={<User className="h-4 w-4" />}
@@ -147,7 +146,6 @@ export function AuthPage() {
             <Input
               label="Email Address"
               type="email"
-              placeholder="name@example.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
               startAdornment={<Mail className="h-4 w-4" />}
@@ -158,7 +156,6 @@ export function AuthPage() {
               <Input
                 label="Password"
                 type="password"
-                placeholder="••••••••"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 startAdornment={<Lock className="h-4 w-4" />}

@@ -111,7 +111,6 @@ export function BudgetModal({
           label="Monthly Limit (INR)"
           type="number"
           step="0.01"
-          placeholder="e.g. 50000"
           value={limitAmount}
           onChange={e => setLimitAmount(e.target.value)}
           startAdornment={<span className="font-bold text-foreground">₹</span>}

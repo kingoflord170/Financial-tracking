@@ -155,7 +155,6 @@ export function AccountModal({
           <>
             <Input
               label="Account Name"
-              placeholder="e.g. HDFC Salary, ICICI Savings, Cash Wallet"
               value={name}
               onChange={e => setName(e.target.value)}
               required

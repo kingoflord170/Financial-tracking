@@ -117,7 +117,6 @@ export function LoanModal({ open, onOpenChange, editingLoan, onSave }: LoanModal
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Input
             label="Loan Name"
-            placeholder="e.g. Car Loan (Nexon EV), Home Loan"
             value={name}
             onChange={e => setName(e.target.value)}
             required
@@ -125,7 +124,6 @@ export function LoanModal({ open, onOpenChange, editingLoan, onSave }: LoanModal
           />
           <Input
             label="Lender / Bank"
-            placeholder="e.g. HDFC Bank, SBI, Tata Capital"
             value={lender}
             onChange={e => setLender(e.target.value)}
             required
@@ -137,7 +135,6 @@ export function LoanModal({ open, onOpenChange, editingLoan, onSave }: LoanModal
             label="Original Principal (INR)"
             type="number"
             step="0.01"
-            placeholder="500000"
             value={principalAmount}
             onChange={e => {
               setPrincipalAmount(e.target.value);
@@ -153,7 +150,6 @@ export function LoanModal({ open, onOpenChange, editingLoan, onSave }: LoanModal
             label="Current Outstanding Principal (INR)"
             type="number"
             step="0.01"
-            placeholder="420000"
             value={outstandingPrincipal}
             onChange={e => setOutstandingPrincipal(e.target.value)}
             startAdornment={<span className="font-bold text-foreground">₹</span>}
@@ -166,7 +162,6 @@ export function LoanModal({ open, onOpenChange, editingLoan, onSave }: LoanModal
             label="Annual Interest Rate (%)"
             type="number"
             step="0.01"
-            placeholder="8.5"
             value={interestRate}
             onChange={e => setInterestRate(e.target.value)}
             endAdornment={<span className="text-muted-foreground font-mono text-xs">%</span>}
@@ -176,7 +171,6 @@ export function LoanModal({ open, onOpenChange, editingLoan, onSave }: LoanModal
             label="Monthly EMI (INR)"
             type="number"
             step="0.01"
-            placeholder="12500"
             value={emiAmount}
             onChange={e => setEmiAmount(e.target.value)}
             startAdornment={<span className="font-bold text-foreground">₹</span>}
@@ -190,7 +184,6 @@ export function LoanModal({ open, onOpenChange, editingLoan, onSave }: LoanModal
             max="31"
             value={dueDay}
             onChange={e => setDueDay(e.target.value)}
-            placeholder="10"
             helperText="1 - 31"
           />
         </div>

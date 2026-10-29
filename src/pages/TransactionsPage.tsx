@@ -316,7 +316,7 @@ export function TransactionsPage() {
         {/* Search Input */}
         <div className="relative">
           <Input
-            placeholder="Search by description, tag, category, account, or amount..."
+            aria-label="Search transactions"
             value={searchTerm}
             onChange={e => {
               setSearchTerm(e.target.value);

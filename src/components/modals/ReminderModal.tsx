@@ -112,7 +112,6 @@ export function ReminderModal({
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <Input
           label="Reminder Title"
-          placeholder="e.g. Airtel Fiber Bill, Flat Rent, Credit Card Due"
           value={title}
           onChange={e => setTitle(e.target.value)}
           required
@@ -124,7 +123,6 @@ export function ReminderModal({
             label="Expected Amount (Optional INR)"
             type="number"
             step="0.01"
-            placeholder="0.00"
             value={amount}
             onChange={e => setAmount(e.target.value)}
             startAdornment={<span className="font-bold text-foreground">₹</span>}

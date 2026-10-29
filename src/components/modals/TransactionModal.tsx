@@ -155,7 +155,6 @@ export function TransactionModal({
           label="Amount (INR)"
           type="number"
           step="0.01"
-          placeholder="0.00"
           value={amount}
           onChange={e => setAmount(e.target.value)}
           startAdornment={<span className="font-bold text-foreground">₹</span>}
@@ -221,7 +220,6 @@ export function TransactionModal({
         {/* Tags */}
         <Input
           label="Tags (Comma separated)"
-          placeholder="e.g. food, weekend, personal"
           value={tagsInput}
           onChange={e => setTagsInput(e.target.value)}
         />

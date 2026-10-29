@@ -144,7 +144,6 @@ export function SavingsGoalModal({
               label="Contribution Amount (INR)"
               type="number"
               step="0.01"
-              placeholder="0.00"
               value={contributionAmount}
               onChange={e => setContributionAmount(e.target.value)}
               startAdornment={<span className="font-bold text-foreground">₹</span>}
@@ -169,7 +168,6 @@ export function SavingsGoalModal({
           <>
             <Input
               label="Goal Name"
-              placeholder="e.g. Emergency Fund, Diwali Gold, Japan Trip"
               value={name}
               onChange={e => setName(e.target.value)}
               startAdornment={<Target className="h-4 w-4 text-muted-foreground" />}
@@ -182,7 +180,6 @@ export function SavingsGoalModal({
                 label="Target Amount (INR)"
                 type="number"
                 step="0.01"
-                placeholder="200000"
                 value={targetAmount}
                 onChange={e => setTargetAmount(e.target.value)}
                 startAdornment={<span className="font-bold text-foreground">₹</span>}
@@ -193,7 +190,6 @@ export function SavingsGoalModal({
                 label="Already Saved (Starting Amount)"
                 type="number"
                 step="0.01"
-                placeholder="0.00"
                 value={initialSaved}
                 onChange={e => setInitialSaved(e.target.value)}
                 startAdornment={<span className="font-bold text-foreground">₹</span>}
