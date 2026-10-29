@@ -572,25 +572,23 @@ export function DashboardPage({ onNavigate, onOpenQuickAdd }: DashboardPageProps
               </div>
             ) : (
               <div className="space-y-3">
-                {activeLoans.slice(0, 2).map(loan => {
-                  const progress = loan.principal_amount > 0
-                    ? Math.round(((loan.principal_amount - loan.outstanding_principal) / loan.principal_amount) * 100)
-                    : 0;
-
-                  return (
-                    <div key={loan.id} className="p-3 rounded-xl bg-card-elevated border border-border space-y-1.5">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-bold text-foreground truncate">{loan.name}</span>
-                        <span className="font-mono text-muted-foreground">EMI: {formatINR(loan.emi_amount)}</span>
-                      </div>
-                      <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-                        <span>O/S: {formatINR(loan.outstanding_principal)}</span>
-                        <span>{progress}% Paid</span>
-                      </div>
-                      <Progress value={progress} variant="gradient" className="h-1.5" />
+                {activeLoans.slice(0, 3).map(loan => (
+                  <div key={loan.id} className="p-3 rounded-xl bg-card-elevated border border-border space-y-1.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-foreground truncate">{loan.name}</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-secondary-foreground font-medium">{loan.lender}</span>
                     </div>
-                  );
-                })}
+                    <div className="flex items-center justify-between text-[11px] text-muted-foreground font-mono">
+                      <span>Amount: <strong className="text-foreground">{formatINR(loan.principal_amount)}</strong></span>
+                      <span>Repay: <strong className="text-primary">{formatINR(loan.emi_amount)}</strong></span>
+                    </div>
+                    {loan.due_day && (
+                      <div className="text-[10px] text-muted-foreground">
+                        Repayment Date: {loan.due_day}th of month
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             )}
           </Card>

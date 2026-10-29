@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select } from '@/components/ui/select';
 import { Loan, LoanStatus } from '@/types';
 
 export interface LoanModalProps {
@@ -26,14 +25,9 @@ export interface LoanModalProps {
 export function LoanModal({ open, onOpenChange, editingLoan, onSave }: LoanModalProps) {
   const [name, setName] = useState('');
   const [lender, setLender] = useState('');
-  const [principalAmount, setPrincipalAmount] = useState('');
-  const [outstandingPrincipal, setOutstandingPrincipal] = useState('');
-  const [interestRate, setInterestRate] = useState('');
-  const [emiAmount, setEmiAmount] = useState('');
-  const [dueDay, setDueDay] = useState('10');
-  const [startDate, setStartDate] = useState('');
-  const [status, setStatus] = useState<LoanStatus>('active');
-  const [notes, setNotes] = useState('');
+  const [amount, setAmount] = useState('');
+  const [monthlyRepayment, setMonthlyRepayment] = useState('');
+  const [repaymentDay, setRepaymentDay] = useState('10');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,25 +35,15 @@ export function LoanModal({ open, onOpenChange, editingLoan, onSave }: LoanModal
     if (editingLoan) {
       setName(editingLoan.name);
       setLender(editingLoan.lender);
-      setPrincipalAmount(String(editingLoan.principal_amount));
-      setOutstandingPrincipal(String(editingLoan.outstanding_principal));
-      setInterestRate(editingLoan.annual_interest_rate !== undefined ? String(editingLoan.annual_interest_rate) : '');
-      setEmiAmount(String(editingLoan.emi_amount));
-      setDueDay(editingLoan.due_day ? String(editingLoan.due_day) : '10');
-      setStartDate(editingLoan.start_date);
-      setStatus(editingLoan.status);
-      setNotes(editingLoan.notes || '');
+      setAmount(String(editingLoan.principal_amount || ''));
+      setMonthlyRepayment(String(editingLoan.emi_amount || ''));
+      setRepaymentDay(editingLoan.due_day ? String(editingLoan.due_day) : '10');
     } else {
       setName('');
       setLender('');
-      setPrincipalAmount('');
-      setOutstandingPrincipal('');
-      setInterestRate('');
-      setEmiAmount('');
-      setDueDay('10');
-      setStartDate(new Date().toISOString().slice(0, 10));
-      setStatus('active');
-      setNotes('');
+      setAmount('');
+      setMonthlyRepayment('');
+      setRepaymentDay('10');
     }
     setError(null);
   }, [editingLoan, open]);
@@ -68,19 +52,32 @@ export function LoanModal({ open, onOpenChange, editingLoan, onSave }: LoanModal
     e.preventDefault();
     setError(null);
 
-    const parsedPrincipal = parseFloat(principalAmount);
-    const parsedOutstanding = parseFloat(outstandingPrincipal || principalAmount);
-    const parsedEmi = parseFloat(emiAmount);
-    const parsedRate = interestRate ? parseFloat(interestRate) : undefined;
-    const parsedDueDay = dueDay ? parseInt(dueDay, 10) : undefined;
+    const parsedAmount = parseFloat(amount);
+    const parsedRepayment = parseFloat(monthlyRepayment);
+    const parsedDay = parseInt(repaymentDay, 10);
 
-    if (isNaN(parsedPrincipal) || parsedPrincipal <= 0) {
-      setError('Please enter a valid positive principal amount.');
+    if (!name.trim()) {
+      setError('Please enter the loan name.');
       return;
     }
 
-    if (isNaN(parsedEmi) || parsedEmi < 0) {
-      setError('Please enter a valid monthly EMI amount.');
+    if (!lender.trim()) {
+      setError('Please enter the lender name.');
+      return;
+    }
+
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      setError('Please enter a valid loan amount.');
+      return;
+    }
+
+    if (isNaN(parsedRepayment) || parsedRepayment <= 0) {
+      setError('Please enter a valid monthly repayment amount.');
+      return;
+    }
+
+    if (isNaN(parsedDay) || parsedDay < 1 || parsedDay > 31) {
+      setError('Please enter a valid repayment day between 1 and 31.');
       return;
     }
 
@@ -89,14 +86,12 @@ export function LoanModal({ open, onOpenChange, editingLoan, onSave }: LoanModal
       await onSave({
         name: name.trim(),
         lender: lender.trim(),
-        principal_amount: parsedPrincipal,
-        outstanding_principal: isNaN(parsedOutstanding) ? parsedPrincipal : parsedOutstanding,
-        annual_interest_rate: parsedRate,
-        emi_amount: parsedEmi,
-        due_day: parsedDueDay,
-        start_date: startDate,
-        status,
-        notes: notes.trim() || undefined,
+        principal_amount: parsedAmount,
+        outstanding_principal: editingLoan?.outstanding_principal ?? parsedAmount,
+        emi_amount: parsedRepayment,
+        due_day: parsedDay,
+        start_date: editingLoan?.start_date || new Date().toISOString().slice(0, 10),
+        status: editingLoan?.status || 'active',
       });
       onOpenChange(false);
     } catch (err: unknown) {
@@ -110,102 +105,60 @@ export function LoanModal({ open, onOpenChange, editingLoan, onSave }: LoanModal
     <Dialog
       open={open}
       onOpenChange={onOpenChange}
-      title={editingLoan ? 'Edit Loan Account' : 'Add New Loan or EMI'}
-      description="Track auto loans, home loans, education loans, or personal debt."
+      title={editingLoan ? 'Edit Loan' : 'Add Loan'}
+      description="Enter the loan details, amount, and monthly repayment terms."
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {/* 1. Loan Name */}
+        <Input
+          label="Loan Name"
+          value={name}
+          onChange={e => setName(e.target.value)}
+          required
+          autoFocus
+        />
+
+        {/* 2. Lender Name */}
+        <Input
+          label="Lender Name"
+          value={lender}
+          onChange={e => setLender(e.target.value)}
+          required
+        />
+
+        {/* 3. Amount */}
+        <Input
+          label="Amount (INR)"
+          type="number"
+          step="0.01"
+          value={amount}
+          onChange={e => setAmount(e.target.value)}
+          startAdornment={<span className="font-bold text-foreground">₹</span>}
+          required
+        />
+
+        {/* 4. Monthly Repayment & 5. Monthly Date for Repayment */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Input
-            label="Loan Name"
-            value={name}
-            onChange={e => setName(e.target.value)}
-            required
-            autoFocus
-          />
-          <Input
-            label="Lender / Bank"
-            value={lender}
-            onChange={e => setLender(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Input
-            label="Original Principal (INR)"
+            label="Monthly Repayment (INR)"
             type="number"
             step="0.01"
-            value={principalAmount}
-            onChange={e => {
-              setPrincipalAmount(e.target.value);
-              if (!editingLoan && !outstandingPrincipal) {
-                setOutstandingPrincipal(e.target.value);
-              }
-            }}
+            value={monthlyRepayment}
+            onChange={e => setMonthlyRepayment(e.target.value)}
             startAdornment={<span className="font-bold text-foreground">₹</span>}
             required
           />
 
           <Input
-            label="Current Outstanding Principal (INR)"
-            type="number"
-            step="0.01"
-            value={outstandingPrincipal}
-            onChange={e => setOutstandingPrincipal(e.target.value)}
-            startAdornment={<span className="font-bold text-foreground">₹</span>}
-            required
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <Input
-            label="Annual Interest Rate (%)"
-            type="number"
-            step="0.01"
-            value={interestRate}
-            onChange={e => setInterestRate(e.target.value)}
-            endAdornment={<span className="text-muted-foreground font-mono text-xs">%</span>}
-          />
-
-          <Input
-            label="Monthly EMI (INR)"
-            type="number"
-            step="0.01"
-            value={emiAmount}
-            onChange={e => setEmiAmount(e.target.value)}
-            startAdornment={<span className="font-bold text-foreground">₹</span>}
-            required
-          />
-
-          <Input
-            label="Due Day of Month"
+            label="Monthly Date for Repayment"
             type="number"
             min="1"
             max="31"
-            value={dueDay}
-            onChange={e => setDueDay(e.target.value)}
-            helperText="1 - 31"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Input
-            label="Start Date"
-            type="date"
-            value={startDate}
-            onChange={e => setStartDate(e.target.value)}
+            value={repaymentDay}
+            onChange={e => setRepaymentDay(e.target.value)}
+            helperText="Day of month (1 - 31)"
             required
           />
-
-          <Select
-            label="Status"
-            value={status}
-            onChange={e => setStatus(e.target.value as LoanStatus)}
-          >
-            <option value="active">Active Loan</option>
-            <option value="paid_off">Paid Off</option>
-            <option value="closed">Closed / Foreclosed</option>
-          </Select>
         </div>
 
         {error && (

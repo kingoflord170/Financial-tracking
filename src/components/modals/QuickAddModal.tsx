@@ -33,10 +33,10 @@ export interface QuickAddModalProps {
     loanId: string,
     accountId: string,
     total: number,
-    principal: number,
-    interest: number,
-    fees: number,
-    paidAt: string,
+    principal?: number,
+    interest?: number,
+    fees?: number,
+    paidAt?: string,
     notes?: string
   ) => Promise<void>;
 }

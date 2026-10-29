@@ -439,28 +439,35 @@ export function useFinanceData() {
     toast.success('Loan updated');
   };
 
+  const deleteLoan = async (id: string) => {
+    await db.loans.delete(id);
+    await db.loan_payments.where('loan_id').equals(id).delete();
+    if (!isDemoMode) {
+      await syncManager.enqueue('loans', 'delete', { id }, crypto.randomUUID());
+    }
+    await reloadData();
+    toast.success('Loan removed');
+  };
+
   /**
-   * Records a loan payment with explicit principal, interest, and fee components.
-   * Updates outstanding principal on the loan, deducts cash from account,
-   * and prevents double counting.
+   * Records a loan payment and updates outstanding balance.
    */
   const recordLoanPayment = async (
     loanId: string,
     accountId: string,
     totalAmount: number,
-    principalComponent: number,
-    interestComponent: number,
-    feeComponent: number,
-    paidAt: string,
+    principalComponent?: number,
+    interestComponent?: number,
+    feeComponent?: number,
+    paidAt?: string,
     notes?: string
   ) => {
     const loan = loans.find(l => l.id === loanId);
     if (!loan) throw new Error('Loan not found');
 
-    const expectedTotal = roundMoney(principalComponent + interestComponent + feeComponent);
-    if (Math.abs(roundMoney(totalAmount) - expectedTotal) > 0.01) {
-      throw new Error(`Total amount (₹${totalAmount}) must match sum of Principal (₹${principalComponent}) + Interest (₹${interestComponent}) + Fees (₹${feeComponent})`);
-    }
+    const principal = principalComponent !== undefined ? principalComponent : totalAmount;
+    const interest = interestComponent || 0;
+    const fee = feeComponent || 0;
 
     const pmtId = crypto.randomUUID();
     const idempotencyKey = crypto.randomUUID();
@@ -473,9 +480,9 @@ export function useFinanceData() {
       account_id: accountId,
       paid_at: paidAt || now,
       total_amount: roundMoney(totalAmount),
-      principal_component: roundMoney(principalComponent),
-      interest_component: roundMoney(interestComponent),
-      fee_component: roundMoney(feeComponent),
+      principal_component: roundMoney(principal),
+      interest_component: roundMoney(interest),
+      fee_component: roundMoney(fee),
       notes,
       idempotency_key: idempotencyKey,
       sync_status: isDemoMode ? 'synced' : 'pending',
@@ -483,7 +490,7 @@ export function useFinanceData() {
     };
 
     // Update loan outstanding balance
-    const newOutstanding = Math.max(0, roundMoney(loan.outstanding_principal - principalComponent));
+    const newOutstanding = Math.max(0, roundMoney(loan.outstanding_principal - principal));
     const isPaidOff = newOutstanding <= 0;
 
     await db.transaction('rw', [db.loan_payments, db.loans], async () => {
@@ -663,6 +670,7 @@ export function useFinanceData() {
     copyPreviousMonthBudgets,
     addLoan,
     updateLoan,
+    deleteLoan,
     recordLoanPayment,
     addReminder,
     updateReminder,
