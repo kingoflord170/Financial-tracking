@@ -36,6 +36,39 @@ export function LoansPage() {
     return activeLoans.reduce((sum, l) => sum + (Number(l.emi_amount) || 0), 0);
   }, [activeLoans]);
 
+  const getLoanNextDueDate = (dueDay?: number) => {
+    if (!dueDay) return null;
+    const now = new Date();
+    const curDay = now.getDate();
+    let targetMonth = now.getMonth();
+    let targetYear = now.getFullYear();
+
+    if (curDay > dueDay) {
+      targetMonth += 1;
+      if (targetMonth > 11) {
+        targetMonth = 0;
+        targetYear += 1;
+      }
+    }
+
+    const maxDays = new Date(targetYear, targetMonth + 1, 0).getDate();
+    const actualDay = Math.min(dueDay, maxDays);
+    const targetDate = new Date(targetYear, targetMonth, actualDay);
+
+    const diffDays = Math.ceil(
+      (targetDate.getTime() - new Date(now.getFullYear(), now.getMonth(), curDay).getTime()) /
+        (1000 * 60 * 60 * 24)
+    );
+
+    const formatted = targetDate.toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+
+    return { formatted, diffDays, isToday: diffDays === 0, isUrgent: diffDays <= 3 };
+  };
+
   const handleDeleteLoan = async (loan: Loan) => {
     if (window.confirm(`Are you sure you want to delete the loan "${loan.name}"?`)) {
       await finance.deleteLoan(loan.id);
@@ -137,92 +170,115 @@ export function LoansPage() {
           />
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {activeLoans.map(loan => (
-              <Card key={loan.id} className="p-5 flex flex-col justify-between hover:border-border transition-colors">
-                <div>
-                  <div className="flex items-start justify-between gap-3 mb-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <h4 className="text-base font-bold text-foreground">{loan.name}</h4>
-                        <Badge variant="outline" className="text-[11px] font-medium flex items-center gap-1">
-                          <Building2 className="h-3 w-3" />
-                          {loan.lender}
-                        </Badge>
+            {activeLoans.map(loan => {
+              const nextDue = getLoanNextDueDate(loan.due_day);
+
+              return (
+                <Card key={loan.id} className="p-5 flex flex-col justify-between hover:border-border transition-colors">
+                  <div>
+                    <div className="flex items-start justify-between gap-3 mb-4">
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-base font-bold text-foreground">{loan.name}</h4>
+                          <Badge variant="outline" className="text-[11px] font-medium flex items-center gap-1">
+                            <Building2 className="h-3 w-3" />
+                            {loan.lender}
+                          </Badge>
+                        </div>
+
+                        {nextDue && (
+                          <div className="flex items-center gap-1.5 text-xs">
+                            {nextDue.isToday ? (
+                              <span className="px-2 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 font-bold text-[11px] animate-pulse">
+                                Repayment Due Today!
+                              </span>
+                            ) : nextDue.isUrgent ? (
+                              <span className="px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 font-semibold text-[11px]">
+                                Due in {nextDue.diffDays} days ({nextDue.formatted})
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 rounded-md bg-secondary text-muted-foreground font-medium text-[11px] flex items-center gap-1">
+                                <Calendar className="h-3 w-3 text-amber-400" />
+                                Next due: <strong className="text-foreground">{nextDue.formatted}</strong> ({nextDue.diffDays}d)
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => {
+                            setEditingLoan(loan);
+                            setIsAddLoanOpen(true);
+                          }}
+                          className="p-1.5 rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+                          title="Edit Loan"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteLoan(loan)}
+                          className="p-1.5 rounded-lg text-muted-foreground hover:bg-destructive/15 hover:text-destructive transition-colors"
+                          title="Delete Loan"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => {
-                          setEditingLoan(loan);
-                          setIsAddLoanOpen(true);
-                        }}
-                        className="p-1.5 rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
-                        title="Edit Loan"
-                      >
-                        <Pencil className="h-3.5 w-3.5" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteLoan(loan)}
-                        className="p-1.5 rounded-lg text-muted-foreground hover:bg-destructive/15 hover:text-destructive transition-colors"
-                        title="Delete Loan"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
+                    {/* Loan Structure Details */}
+                    <div className="grid grid-cols-3 gap-2.5 p-3.5 rounded-xl bg-card-elevated border border-border text-xs mb-4">
+                      <div>
+                        <span className="text-[10px] text-muted-foreground uppercase font-semibold flex items-center gap-1 mb-0.5">
+                          <Banknote className="h-3 w-3 text-primary" />
+                          Amount
+                        </span>
+                        <span className="font-bold text-foreground font-mono text-sm">
+                          {formatINR(loan.principal_amount)}
+                        </span>
+                      </div>
+
+                      <div>
+                        <span className="text-[10px] text-muted-foreground uppercase font-semibold flex items-center gap-1 mb-0.5">
+                          <CreditCard className="h-3 w-3 text-cyan-400" />
+                          Monthly Repay
+                        </span>
+                        <span className="font-bold text-foreground font-mono text-sm">
+                          {formatINR(loan.emi_amount)}
+                        </span>
+                      </div>
+
+                      <div>
+                        <span className="text-[10px] text-muted-foreground uppercase font-semibold flex items-center gap-1 mb-0.5">
+                          <Calendar className="h-3 w-3 text-amber-400" />
+                          Repayment Date
+                        </span>
+                        <span className="font-bold text-amber-400 font-mono text-sm block">
+                          {loan.due_day ? `${loan.due_day}th of month` : 'Monthly'}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Loan Structure Details */}
-                  <div className="grid grid-cols-3 gap-2.5 p-3.5 rounded-xl bg-card-elevated border border-border text-xs mb-4">
-                    <div>
-                      <span className="text-[10px] text-muted-foreground uppercase font-semibold flex items-center gap-1 mb-0.5">
-                        <Banknote className="h-3 w-3 text-primary" />
-                        Amount
-                      </span>
-                      <span className="font-bold text-foreground font-mono text-sm">
-                        {formatINR(loan.principal_amount)}
-                      </span>
-                    </div>
-
-                    <div>
-                      <span className="text-[10px] text-muted-foreground uppercase font-semibold flex items-center gap-1 mb-0.5">
-                        <CreditCard className="h-3 w-3 text-cyan-400" />
-                        Monthly Repayment
-                      </span>
-                      <span className="font-bold text-foreground font-mono text-sm">
-                        {formatINR(loan.emi_amount)}
-                      </span>
-                    </div>
-
-                    <div>
-                      <span className="text-[10px] text-muted-foreground uppercase font-semibold flex items-center gap-1 mb-0.5">
-                        <Calendar className="h-3 w-3 text-amber-400" />
-                        Repayment Date
-                      </span>
-                      <span className="font-bold text-foreground text-xs">
-                        {loan.due_day ? `${loan.due_day}th of month` : 'Monthly'}
-                      </span>
-                    </div>
+                  {/* Payment Action */}
+                  <div className="flex items-center justify-end pt-3 border-t border-border/50">
+                    <Button
+                      size="sm"
+                      variant="primary"
+                      className="gap-1.5"
+                      onClick={() => {
+                        setPaymentLoanId(loan.id);
+                        setIsRecordPaymentOpen(true);
+                      }}
+                    >
+                      <CreditCard className="h-4 w-4" />
+                      <span>Record Repayment</span>
+                    </Button>
                   </div>
-                </div>
-
-                {/* Payment Action */}
-                <div className="flex items-center justify-end pt-3 border-t border-border/50">
-                  <Button
-                    size="sm"
-                    variant="primary"
-                    className="gap-1.5"
-                    onClick={() => {
-                      setPaymentLoanId(loan.id);
-                      setIsRecordPaymentOpen(true);
-                    }}
-                  >
-                    <CreditCard className="h-4 w-4" />
-                    <span>Record Repayment</span>
-                  </Button>
-                </div>
-              </Card>
-            ))}
+                </Card>
+              );
+            })}
           </div>
         )}
       </div>

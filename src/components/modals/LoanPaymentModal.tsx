@@ -3,6 +3,7 @@ import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
+import { DateTimePicker } from '@/components/ui/date-time-picker';
 import { Loan, Account } from '@/types';
 import { formatINR } from '@/lib/accounting/formatters';
 
@@ -152,12 +153,11 @@ export function LoanPaymentModal({
           required
         />
 
-        {/* Repayment Date & Time */}
-        <Input
+        {/* Repayment Date & Time (Calendar & Clock Pickers) */}
+        <DateTimePicker
           label="Repayment Date & Time"
-          type="datetime-local"
           value={date}
-          onChange={e => setDate(e.target.value)}
+          onChange={setDate}
           required
         />
 

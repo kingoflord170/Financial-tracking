@@ -3,6 +3,7 @@ import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
+import { DateTimePicker } from '@/components/ui/date-time-picker';
 import { Account } from '@/types';
 import { formatINR } from '@/lib/accounting/formatters';
 import { ArrowRightLeft, Info, AlertTriangle } from 'lucide-react';
@@ -170,12 +171,11 @@ export function TransferModal({
           </div>
         )}
 
-        {/* Date & Time */}
-        <Input
+        {/* Date & Time (Calendar & Clock Pickers) */}
+        <DateTimePicker
           label="Date & Time"
-          type="datetime-local"
           value={date}
-          onChange={e => setDate(e.target.value)}
+          onChange={setDate}
           required
         />
 

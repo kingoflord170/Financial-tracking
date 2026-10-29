@@ -3,6 +3,7 @@ import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
+import { DateTimePicker } from '@/components/ui/date-time-picker';
 import { Reminder, ReminderRecurrence, Account, Loan } from '@/types';
 
 export interface ReminderModalProps {
@@ -118,24 +119,23 @@ export function ReminderModal({
           autoFocus
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Input
-            label="Expected Amount (Optional INR)"
-            type="number"
-            step="0.01"
-            value={amount}
-            onChange={e => setAmount(e.target.value)}
-            startAdornment={<span className="font-bold text-foreground">₹</span>}
-          />
+        {/* Expected Amount */}
+        <Input
+          label="Expected Amount (Optional INR)"
+          type="number"
+          step="0.01"
+          value={amount}
+          onChange={e => setAmount(e.target.value)}
+          startAdornment={<span className="font-bold text-foreground">₹</span>}
+        />
 
-          <Input
-            label="Due Date & Time"
-            type="datetime-local"
-            value={dueAt}
-            onChange={e => setDueAt(e.target.value)}
-            required
-          />
-        </div>
+        {/* Due Date & Time (Calendar & Clock Pickers) */}
+        <DateTimePicker
+          label="Due Date & Time"
+          value={dueAt}
+          onChange={setDueAt}
+          required
+        />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Select

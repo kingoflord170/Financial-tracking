@@ -3,6 +3,7 @@ import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
+import { DateTimePicker } from '@/components/ui/date-time-picker';
 import { Account, Category, PaymentMethod, Transaction, TransactionType } from '@/types';
 
 export interface TransactionModalProps {
@@ -192,22 +193,20 @@ export function TransactionModal({
           </Select>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {/* Date & Time */}
-          <Input
-            label="Date & Time"
-            type="datetime-local"
-            value={date}
-            onChange={e => setDate(e.target.value)}
-            required
-          />
+        {/* Date & Time (Calendar & Clock Pickers) */}
+        <DateTimePicker
+          label="Date & Time"
+          value={date}
+          onChange={setDate}
+          required
+        />
 
-          {/* Payment Method */}
-          <Select
-            label="Payment Method"
-            value={paymentMethod}
-            onChange={e => setPaymentMethod(e.target.value as PaymentMethod)}
-          >
+        {/* Payment Method */}
+        <Select
+          label="Payment Method"
+          value={paymentMethod}
+          onChange={e => setPaymentMethod(e.target.value as PaymentMethod)}
+        >
             <option value="upi">UPI (GPay / PhonePe / Paytm)</option>
             <option value="cash">Cash</option>
             <option value="card">Debit / Credit Card</option>
@@ -215,7 +214,6 @@ export function TransactionModal({
             <option value="cheque">Cheque</option>
             <option value="other">Other</option>
           </Select>
-        </div>
 
         {/* Tags */}
         <Input
